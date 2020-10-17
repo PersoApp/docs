@@ -82,11 +82,13 @@ As an example for the host-side you could have a look into the [PersoApp PACE](h
 10) the host adds G' and H and sets them as new G'' for the second ECDH and generates a new public key and sends it to the card
 
         G'' = G' + H
+        p2 = keyGen()
         P2 = G'' * p2 //ECDH-step-1
         10/00 86 00 00 45 7C 43 83 41 04 [P2] 00
   
 11) the card processes the hosts public key as G''-ECDH and calculates S, generates its own second public key and sends it to the host
 
+        q2 = keyGen()
         S = P2 * q2  //ECDH-step-2
         Q2 = G'' * q2 //ECDH-step-1
         7C 43 84 41 04 [Q2]
