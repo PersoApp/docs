@@ -40,48 +40,62 @@ PACE has been standardized by [BSI](https://www.bsi.bund.de) to provide a secure
 
 01) the host requests a cards resource, the card declines because of missing authentication.
 
-02) the host requests PACE for authentication, possibly giving a preference 
+02) the host requests PACE for authentication, possibly giving a preference
+
         **10/00 86 00 00 02 7C 00 00**
         
 03) the card responds with a 128-bit (16 byte) random number (nonce) encrypted with PACE_nonce_AES128key
+
         **7C 12 80 10 <encrypted_nonce>**
         
 04) the host decrypts the 128-bit nonce with PACE_nonce_AES128key derived from user input as described above
 
 05) the host calculates G' as G * nonce, i.e. using nonce as private key and calculating the corresponding public key (use keyAgreement Plain with G as public point and nonce as own secret)
+
         **G' = G * nonce**
         
 06) the host uses G' as base for a classic G'-ECDH and sends the resulting public key to the card
+
         **P1 = G' * p1**
         **10/00 86 00 00 45 7C 43 81 41 04 [P1] 00**
   
 07) the card uses the previously chosen nonce to calculate G' and processes the classic ECDH with the host public key and stores the result as H (could already calculate G'' = G' + H)
+
         **G' = G * nonce, H = ECDH(P1, q1), G'' = G' + H, Q1 = G' * q1**
   
 08) the card sends its own G'-ECDH based public key (Q1) to the host
+
         **7C 43 82 41 04 [Q1]**
   
 09) the host processes the cards public key with the G'-ECDH and generates H
+
         **H = ECDH(Q1, p1)**
   
 10) the host adds G' and H and sets them as new G'' for the second ECDH and generates a new public key and sends it to the card
+
         **G'' = G' + H, P2 = G'' * p2**
         **10/00 86 00 00 45 7C 43 83 41 04 [P2] 00**
   
 11) the card processes the hosts public key as G''-ECDH and calculates S, generates its own second public key and sends it to the host
+
         **S = ECDH(P2, q2), Q2 = G'' * q2**
         **7C 43 84 41 04 [Q2]**
 
 12) the host process the second public key from the card with G''-ECDH and calculates S
+
         **S = ECDH(Q2, p2)**
+        
 13) the x-coordinate of S is the input for the counter-KDF to create secure messaging keys for encrypt and MAC
+
         **SM_keys[] = KDF(ctr, S[x])**
         
 14) authentication tokens are exchanged and verified, hosts starts with the second public key of the card
+
         **auth_token_host = TLV.build(0x7F49, TLV.buildOID(cryptoMechanism, TLV.build(0x86, Q2)))**
         **10/00 86 00 00 0C 7C 0A 85 08 <auth_token_host> 00**
 
 16) the card verifies the authentication token and generates auth_token_card from P2
+
         **auth_token_host = TLV.build(0x7F49, TLV.buildOID(cryptoMechanism, TLV.build(0x86, P2)))**
         **7C 0A 86 08 <auth_token_host> 00** (optionally, but not necessary with 87 (CAREF1), 88 (CAREF2))
 
