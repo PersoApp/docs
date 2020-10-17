@@ -24,7 +24,7 @@ PACE has been standardized by [BSI](https://www.bsi.bund.de) to provide a secure
 * PACE defines a so-called general mapping (GM), integrated mapping (IM) and chip authentication mapping (CAM)
   GM means diffie-hellman key-exchanges should be used to agree on cryptographic parameters, IM describes a patented mechanism without reyling on DH and CAM is more sophiscated     variant mainly to be used in national ID documents.
   
-* We'll focus on general mapping with elliptic curve diffie-hellman here, because this variant is also publicly available  
+* We'll focus on general mapping with elliptic curve diffie-hellman here, because this variant is also publicly available in JavaCard or easy implentable on [BasicCard](http://www.basiccard.com/)
 
 excerpt from public JC3.0.5 API docs:
 "Elliptic curve Generic Mapping according to TR03110 v2. Performs the s * G + H calculation, where s is provided as EC private key private value, G is provided as base point of the private key object and H is passed as public data in the generateSecret() method."
