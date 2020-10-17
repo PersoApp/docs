@@ -42,7 +42,7 @@ PACE has been standardized by [BSI](https://www.bsi.bund.de) to provide a secure
 
 02) the host requests PACE for authentication, possibly giving a preference
 
-        **10/00 86 00 00 02 7C 00 00**
+        ** 10/00 86 00 00 02 7C 00 00 **
         
 03) the card responds with a 128-bit (16 byte) random number (nonce) encrypted with PACE_nonce_AES128key
 
