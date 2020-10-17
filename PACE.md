@@ -59,12 +59,17 @@ As an example for the host-side you could have a look into the [PersoApp PACE](h
 
 06) the host uses G' as base for a classic G'-ECDH and sends the resulting public key to the card
 
-        P1 = G' * p1
+        p1 = keyGen()
+        P1 = G' * p1  //ECDH-step-1
         10/00 86 00 00 45 7C 43 81 41 04 [P1] 00
 
 07) the card uses the previously chosen nonce to calculate G' and processes the classic ECDH with the host public key and stores the result as H (could already calculate G'' = G' + H)
 
-        G' = G * nonce, H = ECDH(P1, q1), G'' = G' + H, Q1 = G' * q1
+        G' = G * nonce
+        q1 = keyGen()
+        H = P1 * q1   //ECDH-step-2
+        G'' = G' + H
+        Q1 = G' * q1  //ECDH-step-1
 
 08) the card sends its own G'-ECDH based public key (Q1) to the host
 
@@ -72,22 +77,24 @@ As an example for the host-side you could have a look into the [PersoApp PACE](h
   
 09) the host processes the cards public key with the G'-ECDH and generates H
 
-        H = ECDH(Q1, p1)
+        H = Q1 * p1   //ECDH-step-2
 
 10) the host adds G' and H and sets them as new G'' for the second ECDH and generates a new public key and sends it to the card
 
-        G'' = G' + H, P2 = G'' * p2
+        G'' = G' + H
+        P2 = G'' * p2 //ECDH-step-1
         10/00 86 00 00 45 7C 43 83 41 04 [P2] 00
   
 11) the card processes the hosts public key as G''-ECDH and calculates S, generates its own second public key and sends it to the host
 
-        S = ECDH(P2, q2), Q2 = G'' * q2
+        S = P2 * q2  //ECDH-step-2
+        Q2 = G'' * q2 //ECDH-step-1
         7C 43 84 41 04 [Q2]
 
 12) the host process the second public key from the card with G''-ECDH and calculates S
 
-        S = ECDH(Q2, p2)
-        
+        S = Q2 * p2)  //ECDH-step-2
+
 13) the x-coordinate of S is the input for the counter-KDF to create secure messaging keys for encrypt and MAC
 
         SM_keys[] = KDF(ctr, S[x])
