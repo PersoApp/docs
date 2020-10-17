@@ -1,5 +1,5 @@
 # PACE
-## description of Password Authenticated Connection Established for DEVELOPERS :-)
+## description of Password Authenticated Connection Establishment for DEVELOPERS :-)
 
 ### references
 
@@ -24,8 +24,38 @@ PACE has been standardized by [BSI](https://www.bsi.bund.de) to provide a secure
 * PACE defines a so-called general mapping (GM), integrated mapping (IM) and chip authentication mapping (CAM)
   GM means diffie-hellman key-exchanges should be used to agree on cryptographic parameters, IM describes a patented mechanism without reyling on DH and CAM is more sophiscated     variant mainly to be used in national ID documents.
   
-* We'll focus on general mapping with elliptic curve diffie-hellman here, because this variant is also publicly available in JavaCard or easy implentable on [BasicCard](http://www.basiccard.com/)
+* We'll focus on general mapping with elliptic curve diffie-hellman here, because this variant is also publicly available in JavaCard or easy implentable on freely programmable cards like [BasicCard](http://www.basiccard.com/)
+
+* The secure messaging part itself (usualy AES-128-CBC-CMAC8) is _NOT_ part of PACE itself, even when normative references typically declare combinations of PACE and secure messaging combinations.
+
+* In practice we're not dealing with PINs and passwords directly and don't store such secrets in the chip.
+#### In general lets make the assumption PACE_nonce_AES128key = SHA-1(usersecret)[0 .. 15].
 
 excerpt from public JC3.0.5 API docs:
 "Elliptic curve Generic Mapping according to TR03110 v2. Performs the s * G + H calculation, where s is provided as EC private key private value, G is provided as base point of the private key object and H is passed as public data in the generateSecret() method."
+
+### protocol flow overview
+
+01) the host requests a cards resource, the card declines because of missing authentication.
+02) the host requests PACE for authentication, possibly giving a preference 
+03) the card responds with a 128-bit (16 byte) random number (nonce) encrypted with PACE_nonce_AES128key
+04) the host decrypts the 128-bit nonce with PACE_nonce_AES128key derived from user input as described above
+05) the host calculates G' as G * nonce, i.e. using nonce as private key and calculating the corresponding public key (use keyAgreement Plain with G as public point and nonce as own secret)
+06) the host uses G' as base for a classic ECDH and sends the resulting public key to the card
+07) the card uses the previously chosen nonce to calculate G' and processes the classic ECDH with the host public key and stores the result as H (could already calculate G'' = G'+H)
+08) the card sends its own G'-ECDH based public key to the host
+09) the host processes the cards public key with the G'-ECDH and generates H
+10) the host adds G' and H and sets them as new G'' for the second ECDH and generates a new public key and sends it to the card
+11) the card processes the hosts public key as G''-ECDH and calculates S, generates its own second public key and sends it to the host
+12) the host process the second public key from the card with G''-ECDH and calculates S
+13) the x-coordinate of S is the input for the counter-KDF to create secure messaging keys for encrypt and MAC
+14) secure messaging is established, authentication tokens are exchanged and verified if used in protocol
+15) application layer communication takes places on a secured and authenticated channel
+
+### protocol details and implementation notes
+
+tbc :-)
+
+
+
 
