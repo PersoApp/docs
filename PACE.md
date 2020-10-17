@@ -36,6 +36,9 @@ PACE has been standardized by [BSI](https://www.bsi.bund.de) to provide a secure
   private value, G is provided as base point of the private key object and H is passed as public data in the generateSecret() method.")
 
 ### protocol flow overview
+
+As an example for the host-side you could have a look into the [PersoApp PACE](https://github.com/PersoApp/import/blob/master/PersoApp-Core/src/de/persoapp/core/card/PACE.java) code.
+
 #### capital letters = public key / EC points, small letters private keys / scalars
 
 01) the host requests a cards resource, the card declines because of missing authentication.
