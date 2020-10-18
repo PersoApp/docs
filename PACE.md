@@ -95,7 +95,7 @@ As an example for the host-side you could have a look into the [PersoApp PACE](h
 
 12) the host process the second public key from the card with G''-ECDH and calculates S
 
-        S = Q2 * p2)  //ECDH-step-2
+        S = Q2 * p2  //ECDH-step-2
 
 13) the x-coordinate of S is the input for the counter-KDF to create secure messaging keys for encrypt and MAC
 
