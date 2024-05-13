@@ -1,6 +1,10 @@
 # PACE
 ## description of Password Authenticated Connection Establishment for DEVELOPERS :-)
-                                     V0.1 2020-10-17, ck@c-base.org
+                                     V0.2 2024-05-13, ck@c-base.org
+
+### changelog
+* V0.2 2024-05-13, ck@c-base.org: corrected a mistake in step 6, see edit note
+* V0.1 2020-10-17, ck@c-base.org: initial revision
 
 ### references
 
@@ -62,7 +66,7 @@ As an example for the host-side you could have a look into the [PersoApp PACE](h
     Edit: a previous version said G', but that's incorrect for this early step. (Thanks Michael!)
  
         p1 = keyGen()
-        P1 = G' * p1  //ECDH-step-1
+        P1 = G * p1  //ECDH-step-1
         10/00 86 00 00 45 7C 43 81 41 04 [P1] 00
 
 07) the card uses the previously chosen nonce to calculate G' and processes the classic ECDH with the host public key and stores the result as H (could already calculate G'' = G' + H)
