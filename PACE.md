@@ -57,8 +57,10 @@ As an example for the host-side you could have a look into the [PersoApp PACE](h
 
         G' = G * nonce
 
-06) the host uses G' as base for a classic G'-ECDH and sends the resulting public key to the card
+06) the host uses G as base for a classic ECDH and sends the resulting public key to the card
 
+    Edit: a previous version said G', but that's incorrect for this early step. (Thanks Michael!)
+ 
         p1 = keyGen()
         P1 = G' * p1  //ECDH-step-1
         10/00 86 00 00 45 7C 43 81 41 04 [P1] 00
